@@ -1,0 +1,11 @@
+{
+  "name": "connect4",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "repository": "git@github.com:Chevallm/connect-4.git",
+  "author": "Maxime Chevallier-Pichon <maxime.chevallier_pichon@yahoo.fr>",
+  "license": "MIT",
+  "dependencies": {
+    "typescript": "^4.6.3"
+  }
+}
