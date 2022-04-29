@@ -80,12 +80,8 @@ export class Connect4 {
    */
   private getConsequences(location: TokenLocation): string {
     for (let direction of DIRECTIONS) {
-      for (let it = 0; it < 4; it++) {
-        if (this.hasFourInARow(location, direction)) {
-          this.end(this.player);
-        } else {
-          continue;
-        }
+      if (this.hasFourInARow(location, direction)) {
+        return this.end(this.player);
       }
     }
     if (this.isGridFull()) {
@@ -114,6 +110,7 @@ export class Connect4 {
     }
     if (this.isCellInbound(location)) {
       if (this.currentPlayerOwnToken(location)) {
+        chain++;
         const nextTokenLocation = this.getNextTokenLocation(location, direction);
         return this.hasFourInARow(nextTokenLocation, direction, chain);
       } else {
