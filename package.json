@@ -5,6 +5,10 @@
   "repository": "git@github.com:Chevallm/connect-4.git",
   "author": "Maxime Chevallier-Pichon <maxime.chevallier_pichon@yahoo.fr>",
   "license": "MIT",
+  "type": "commonjs",
+  "scripts": {
+    "start": "npx tsc && node dist/index.js"
+  },
   "dependencies": {
     "typescript": "^4.6.3"
   }

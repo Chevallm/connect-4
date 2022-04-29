@@ -1,11 +1,13 @@
-enum STRINGS {
+export enum STRINGS {
     PLAYER_N_WINS = 'Player {n} wins!',
     COLUMN_FULL = 'Column full!',
+    DRAW = 'It\'s a draw!',
     GAME_FINISHED = 'Game has finished!',
-    NEXT_TURN = 'Player {n} has a turn'
+    NEXT_TURN = 'Player {n} has a turn',
+    PLAYER_TOKEN = '{n}'
 };
 
-const DIRECTIONS = [
+export const DIRECTIONS = [
     [-1, 0], // UP
     [-1, 1], // UP_RIGHT
     [0, 1], // RIGHT
@@ -15,3 +17,9 @@ const DIRECTIONS = [
     [0, -1], // LEFT
     [-1 , -1] // UP_LEFT
 ];
+
+export enum GameState {
+    NOT_BEGAN = 'not began',
+    IN_PROGRESS = 'in progress',
+    FINISHED = 'finished'
+} 

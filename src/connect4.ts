@@ -1,11 +1,18 @@
+import { DIRECTIONS, STRINGS, GameState } from './constants';
+import { Direction, TokenLocation } from './types';
 export class Connect4 {
 
-    grid: number[][] = [];
     private readonly ROWS = 6;
     private readonly COLS = 7;
+    private grid: number[][] = [];
     private player = 1;
+    private gameState = GameState.NOT_BEGAN;
 
   constructor() {      
+    
+  }
+  
+  start(): void {
     this.grid = [];
     for (let row = 0; row < this.ROWS; row++) {
       let row = [];
@@ -14,16 +21,26 @@ export class Connect4 {
       }
       this.grid.push(row);
     }
+    this.gameState = GameState.IN_PROGRESS;
   }
 
-  play(column: number): string{
+  play(column: number): string {
+    if (this.gameState === GameState.FINISHED) {
+      this.printGrid();
+      console.log(STRINGS.GAME_FINISHED);
+      return STRINGS.GAME_FINISHED;
+    }
     const nextAvailableRowForColumn = this.getNextAvailableRowForColumn(column);
-    if (nextAvailableRowForColumn < 0) {
+    if (nextAvailableRowForColumn < 0) {      
+        this.printGrid();
+        console.log(STRINGS.COLUMN_FULL);
         return STRINGS.COLUMN_FULL;
     }
-    this.dropToken(column, nextAvailableRowForColumn);
-    const consequence = this.getConsequences(nextAvailableRowForColumn, column);
-    return '';
+    this.dropToken({row: nextAvailableRowForColumn, column});
+    const consequence = this.getConsequences({row: nextAvailableRowForColumn, column});
+    this.printGrid();
+    console.log(consequence);
+    return consequence;
   }
 
   /**
@@ -49,7 +66,8 @@ export class Connect4 {
    * @param column the column where the token is dropped
    * @param row the last row available for the column
    */
-  private dropToken(column: number, row: number): void {
+  private dropToken(location: TokenLocation): void {
+    const {row, column} = location;
       this.grid[row][column] = this.player;
   }
 
@@ -60,19 +78,23 @@ export class Connect4 {
    * @param dropedTokenColumn
    * @returns a phrase describing the consequences
    */
-  private getConsequences(droppedTokenRow: number, droppedTokenColumn: number): STRINGS {
-      for (let direction of DIRECTIONS) {
-        for (let it = 0; it < 4; it++) {
-            const nextRow = droppedTokenRow + (direction[0] * it);
-            const nextColumn = droppedTokenColumn + (direction[1] * it);
-            if (this.isCellInbound(direction[0], direction[1])) {
-            
-            }
-            continue;
+  private getConsequences(location: TokenLocation): string {
+    for (let direction of DIRECTIONS) {
+      for (let it = 0; it < 4; it++) {
+        if (this.hasFourInARow(location, direction)) {
+          this.end(this.player);
+        } else {
+          continue;
         }
       }
-
-    return STRINGS.COLUMN_FULL;
+    }
+    if (this.isGridFull()) {
+      this.end(0);
+      return STRINGS.DRAW;
+    } else {
+      this.changePlayer();
+      return STRINGS.NEXT_TURN.replace(STRINGS.PLAYER_TOKEN, (this.player).toString());
+    }
   }
 
   /**
@@ -81,8 +103,36 @@ export class Connect4 {
    * @param column 
    * @returns true if the column is in the grid else false
    */
-  private isCellInbound(row: number, column: number): boolean {
-    return (row < 0 || row > this.ROWS) || (column < 0 || column > this.COLS);
+  private isCellInbound(location: TokenLocation): boolean {
+    const {row, column} = location;
+    return (row >= 0 && row < this.ROWS) && (column >= 0 && column < this.COLS);
+  }
+
+  private hasFourInARow(location: TokenLocation, direction: Direction, chain = 0): boolean {
+    if (chain === 4) {
+      return true;
+    }
+    if (this.isCellInbound(location)) {
+      if (this.currentPlayerOwnToken(location)) {
+        const nextTokenLocation = this.getNextTokenLocation(location, direction);
+        return this.hasFourInARow(nextTokenLocation, direction, chain);
+      } else {
+        return false;
+      }
+    }
+    return false;
+  }
+
+  private currentPlayerOwnToken(location: TokenLocation): boolean {
+    const {row, column} = location;
+    return this.grid[row][column] === this.player;
+  } 
+
+  private getNextTokenLocation(location: TokenLocation, direction: Direction): TokenLocation {
+    return {
+      row: location.row + direction[0],
+      column: location.column + direction[1]
+    };
   }
 
   /**
@@ -91,6 +141,35 @@ export class Connect4 {
   private changePlayer(): void {
       this.player = this.player === 1 ? 2 : 1;
   }
-}
 
-new Connect4().play(0);
+  private isGridFull(): boolean {
+    for (let column = 0; column < this.COLS; column++) {
+      if (this.getNextAvailableRowForColumn(column) > -1) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private end(winner: number): string {
+    this.gameState = GameState.FINISHED;
+    if (winner > 0) {
+      console.log(STRINGS.PLAYER_N_WINS.replace(STRINGS.PLAYER_TOKEN, (this.player).toString()))
+      return STRINGS.PLAYER_N_WINS.replace(STRINGS.PLAYER_TOKEN, (this.player).toString());
+    } else {
+      console.log(STRINGS.DRAW)
+      return STRINGS.DRAW;
+    }
+  }
+
+  private printGrid() {
+    let string = '';
+    for (let row of this.grid) {
+      for (let col of row) {
+        string += col > 0 ? col+'' : '-'
+      }
+      string += '\n';
+    }
+    console.log(string);
+  }
+}
