@@ -1,25 +1,30 @@
 import { DIRECTIONS, STRINGS, GameState } from './constants';
 import { Direction, TokenLocation } from './types';
+
 export class Connect4 {
 
     private readonly ROWS = 6;
     private readonly COLS = 7;
-    private grid: number[][] = [];
+    private _grid: number[][] = [];
     private player = 1;
     private gameState = GameState.NOT_BEGAN;
 
   constructor() {      
     
   }
+
+  get grid() {
+    return this._grid;
+  }
   
   start(): void {
-    this.grid = [];
+    this._grid = [];
     for (let row = 0; row < this.ROWS; row++) {
       let row = [];
       for (let col = 0; col < this.COLS; col++) {
         row.push(0);
       }
-      this.grid.push(row);
+      this._grid.push(row);
     }
     this.gameState = GameState.IN_PROGRESS;
   }
@@ -54,7 +59,7 @@ export class Connect4 {
     if (isTheLastCell) {
         return row;
     }
-    const isCellAvailable = this.grid[row+1][column] > 0;
+    const isCellAvailable = this._grid[row+1][column] > 0;
     if (isCellAvailable) {
         return row;
     }
@@ -68,7 +73,7 @@ export class Connect4 {
    */
   private dropToken(location: TokenLocation): void {
     const {row, column} = location;
-      this.grid[row][column] = this.player;
+      this._grid[row][column] = this.player;
   }
 
   /**
@@ -122,7 +127,7 @@ export class Connect4 {
 
   private currentPlayerOwnToken(location: TokenLocation): boolean {
     const {row, column} = location;
-    return this.grid[row][column] === this.player;
+    return this._grid[row][column] === this.player;
   } 
 
   private getNextTokenLocation(location: TokenLocation, direction: Direction): TokenLocation {
@@ -161,7 +166,7 @@ export class Connect4 {
 
   private printGrid() {
     let string = '';
-    for (let row of this.grid) {
+    for (let row of this._grid) {
       for (let col of row) {
         string += col > 0 ? col+'' : '-'
       }
