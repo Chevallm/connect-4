@@ -1,4 +1,4 @@
-import { Connect4 } from "./connect4"
+import { Connect4 } from "./core/connect4"
 
 const game = new Connect4();
 game.start();
