@@ -1,2 +1,5 @@
-import { Connect4 } from "./core/connect4";
+import { GameManager } from "./ui/game-manager";
 
+
+const gameManager = new GameManager();
+gameManager.start();

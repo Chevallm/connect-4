@@ -31,7 +31,8 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         {
-          from: path.resolve(__dirname, 'src' , 'ui', 'index.html')
+          from: path.resolve(__dirname, 'src' , 'ui', 'index.html'),
+          writeToDisk: true
         },
       ],
     })
